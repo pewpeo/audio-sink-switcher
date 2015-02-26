@@ -35,12 +35,14 @@ class AudioSinkSwitcher:
             "audio-sink-switcher-icon",
             appindicator.IndicatorCategory.APPLICATION_STATUS,
             os.path.dirname(os.path.realpath(__file__)))
-        self.ind.set_status (appindicator.IndicatorStatus.ACTIVE)
-        self.ind.set_attention_icon ("indicator-messages-new")
+        self.ind.set_status(appindicator.IndicatorStatus.ACTIVE)
+        self.ind.set_attention_icon("audio-sink-switcher-icon")
 
         self.menu = Gtk.Menu()
         self.sinks = AudioSinkSwitcher.get_sink_list()
         self.create_menu()
+
+        self.ind.connect("scroll-event", self.scroll)
 
         # GLib.timeout_add(5000, self.handler_timeout)
 
@@ -80,6 +82,10 @@ class AudioSinkSwitcher:
     def quit(self, w):
         """Quit application."""
         Gtk.main_quit()
+
+    def scroll(self, ind, steps, direction):
+        "Refresh menu items on scroll event."
+        self.refresh(None)
 
     # def handler_timeout(self):
     #     """Refresh on Glib timeout."""
@@ -176,7 +182,9 @@ class AudioSinkSwitcher:
         sinks = OrderedDict(sorted(sinks.items(), key=lambda d: d[1]))
         return sinks
 
-if __name__ == "__main__":
-
+def main():
     gui = AudioSinkSwitcher()
     gui.main()
+
+if __name__ == "__main__":
+    main()
